@@ -78,3 +78,45 @@ The overwhelming majority of bankrupt companies fall below the Income Asset Rati
 
 ### Logistic Regression Model
 
+Using grid search, I built a logistic regression model that uses lasso regularization with a C value of e^-1. This model eliminated 21 variables and yielded an F1 score of 0.3 on my testing data. As the confusion matrix below shows, the recall is only slightly worse than the baseline model, while the number of false positives have been cut in half.
+
+![Logistic Regression Confusion Matrix](images/logreg_confusion.png)
+
+One of the benefits of the logistic regression model is that its probability function produces a unique probability value for each point in our testing data. This means that we can easily adjust the probability threshold we want our decision function to use. A higher probability threshold can be used if we want to maximize our model's precision, while a low probability threshold can be used if we want to maximize our model's recall. The precision recall curve below shows this tradeoff, with vertical lines showing the probability thresholds at which each tradeoff occurs.
+
+![Logistic Regression Precision Recall Curve](images/logreg_curve.png)
+
+With a 99% precision for predicting non-bankruptcies, the 50% probability threshold is useful for making conservative investments (beating the market by 2 points) but not useful for identifying stocks to short since it consists of 82% false positives. On the other hand, we have a false positive rate of only 10% above the 99.9% probability threshold. At this threshold, we pick out 9 true positive bankruptcies plus one false positive. 
+
+Looking at the curve we can see how the seven highest probability data points were all true positives. Then we see the presence of the eighth data point cause the precision to plummet from 100% below 90%. Then, with the inclusion of two more true positives, we see the precision rise back to 90%.
+
+### Decision Tree #2:
+
+The second decision tree model I built has a maximum depth of 6, which allows it to fit better on the training data. On the testing data, it has a recall of 0.84 and a precision of 0.2, which means that it's recall improved by 3 points compared to the Logistic Regression Model while its precision improved by two points, yielding an F1 score of 0.32, an improvement of 2 points over logistic regression model at the 50% probability threshold and a 15 point improvement over the baseline. However, if we look at the precision recall curve, we see that the precision drops must faster in this model than it does in the logistic regression model.
+
+![Decision Tree 2 Curve](images/dt_2_curve.png)
+
+There are fewer points defining this curve than there are defining the logistic regression curve, because there isn't a probability value for each point of testing data but only for each leaf of the decision tree. At the second highest threshold, there is one false positive for two true positives, as we can see by the fact that the precision drops from 100% to 67%. The small number of data points at high probability thresholds makes this model useless for predicting bankruptcies with precision, though at a 50% threshold we could use it to reduce bankruptcies to below 1% of our portfolio.
+
+### Random Forest
+
+The random forest algorithm generates a forest of decision trees that are each built on a random subset of the training data and select decision criteria from a random subset of features. The probability function is defined by the percentage of trees that 'vote' for a given class. At a 50% probability threshold, the model continues to improve upon previous models, with an F1 score of 0.38. We get this score through a 1 pt. decrease in recall compared to  Decision Tree #2 (down to 0.83 from 0.84) and a 5 point increase in precision compared to Decision Tree #2 (up to 0.25 from 0.2).
+
+Again, this makes our model very useful for making conservative investments, but how well does it do at picking out a high precision set of high-probability bankruptcies?
+
+![Random Forest Curve](images/rfc_curve.png)
+
+At the right side of the curve, each point corresponds to many data points that got the same small number of votes. However, on the left side of of the curve, each probability corresponds to a unique number of votes. This means that we can see how each false or true positive affects the rise and fall of the curve. Thus we see three true positive followed by a false positive (the dip), followed by three more true positives, followed by another false positive. Precision then flattens out to around 50% between the two yellow lines, before slowly declining. This yields an 80% precision for the top ten probabilities for this model set as opposed to a 90% precision for the top ten probabilities for the linear regression model. One reason for this may be the Rotten Tomatoes Effect--whereby movies that have many slightly positive reviews will be rated as 100% Fresh, while movies with many rave reviews and a few negative reviews will receive a rating below 100%. Similarly, the voting-based decision tree algorithm doesn't take account of the entropy of individual leaves, just of the overall decision made by each tree.
+
+### XGBoost
+
+XGBoost is an machine learning algorithm based on gradient boosted tree models. The model is first trained using weak learners--trees that don't maximize information gain (unlike information-maximizing nodes generated by a Decision Tree Model). New weak learners are then trained on the errors made by their predecessors. The final algorithm uses the combined training of many weak learners to make its predictions on the test data.
+
+Because XGBoost has a tendency to overfit on the training data -- especially if tree depths are too big or the number of estimators used is too great, I was conservative in the criteria I used to perform my grid search. The model that grid search ultimately selected used a max-depth of 4, a minimum child weight of 0.2, 60 estimators and a lambda regularization of 64. 
+
+This yielded an F1 score of 0.45 at the 50% probability threshold, which was obtained through a lower recall of 0.6 and a higher precision of 0.35. 
+
+At higher probabilities, the precision was similar to that of the Random Forest Model, though it took longer for precision to dip down to 50%:
+
+![XGB Precision Recall Curve](images/xgb_curve.png)
+
