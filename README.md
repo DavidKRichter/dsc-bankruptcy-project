@@ -131,3 +131,7 @@ The disadvantage of Logistic Regression is that the precision of this model fluc
 ## Further Questions and Analysis
 
 In order to more properly quantify the strengths and weaknesses of Logistic Regression and XGBoost for making bankruptcy predictions, we should apply a smoothing function to each precision/recall curve. This would give us a better picture of expected bankruptcies at each recall level. A variance interval around this smoothing function would tell us how much the curve was being smoothed and quantify the risk that precision predictions at a given recall value might turn out to be incorrect.
+
+Ultimately, the biggest limitation of this project is that the data has been flattened out, so we don't know how the financial data of these companies changed over time. This is both makes it harder to assess whether a company's financial health is improving or getting worse and also makes it difficult to know the extent to which financial health is or is not priced into a company's stock market valuation.
+
+A time series analysis that looks at the interplay between market valuation and financial reporting might help us to better understand this relationship and determine when bankruptcy risk has been priced into share prices and when it hasn't.
