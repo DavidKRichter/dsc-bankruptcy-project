@@ -36,6 +36,8 @@ While the second assumption is unrealistic, it's useful because it means that if
 
 ## The Data
 
+The dataset used for this project was downloaded from [Kaggle](https://www.kaggle.com/datasets/fedesoriano/company-bankruptcy-prediction) and was originally published in the Taiwan Economic Journal. It can be viewed in the [data](data) folder of this github repository.
+
 ### Class Imbalance
 
 This data set is highly imbalanced with only 3.2% of companies belonging to the bankruptcy class. This means that a model that predicts the majority class 100% of the time will have 96.8% accuracy. If we're trying to pick out non-bankruptcies for a conservative investment strategy, then we want our model to be able to do so with >96.8% precision, since otherwise, we would be just as well off investing randomly in the market without the aid of a model.
